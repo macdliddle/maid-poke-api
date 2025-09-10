@@ -1,42 +1,174 @@
+/* card size and spacing vars */
+:root {
+  --card-size: clamp(90px, 16vw, 180px);
+  --gap: clamp(8px, 1.2vw, 18px);
+  --flip-ms: 400ms;
+}
+
+/* center board on screen */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  padding: var(--gap);
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* 4×4 grid of cards */
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(4, var(--card-size));
+  gap: var(--gap);
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+/* wrapper for header and grid */
+.game-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--gap);
+}
+
+/* header: strikes, moves, restart */
+.game-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: clamp(14px, 2vw, 20px);
+}
+.game-header .strikes {
+  color: #ef4444;
+}
+
+/* fullscreen overlay for win and lose */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+.overlay-content {
+  background: #fff;
+  color: #000;
+  padding: 2rem;
+  border-radius: 0.5rem;
+  text-align: center;
+}
+.overlay-content .restart-btn {
+  margin-top: 1rem;
+}
+
+/* card state outlines */
+.card.selected { outline: 4px solid #facc15; }
+.card.mismatch { outline: 4px solid #ef4444; }
+.card.matched  { outline: 4px solid #22c55e; }
+
+/* fade matched cards */
+.card.fading {
+  transition: opacity 1s ease;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* card button */
+.card-button {
+  position: relative;
+  width: var(--card-size);
+  height: var(--card-size);
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  perspective: 600px;
+}
+
+/* focus outline */
+.card-button:focus-visible {
+  outline: 3px solid #ffeb3b;
+  outline-offset: 2px;
+}
+
+/* flip wrapper */
+.card .card-inner {
+  position: absolute;
+  inset: 0;
+  transition: transform var(--flip-ms) ease;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* flip when revealed/matched */
+.card.revealed .card-inner,
+.card.matched .card-inner {
+  transform: rotateY(180deg);
+}
+
+/* card faces stacked, hidden back */
+.card-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  font-size: clamp(18px, 6vw, 40px);
+  backface-visibility: hidden;
+  overflow: hidden;
+}
+
+/* card front: patterned back */
+.card-front {
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #1976d2,
+      #1976d2 10px,
+      #1e88e5 10px,
+      #1e88e5 20px
+    );
+  color: #fff;
+}
+
+/* card back: revealed side */
+.card-back {
+  background: #fff;
+  color: #333;
+  transform: rotateY(180deg);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.card-back img {
+  max-width: 75%;
+  max-height: 75%;
+  object-fit: contain;
+  height: auto;
+}
+
+/* hover/focus grow effect */
+.card:not(.revealed):not(.matched):hover .card-inner,
+.card:not(.revealed):not(.matched):focus-visible .card-inner {
+  transform: scale(1.05);
+}
+
+/* glow for matched cards */
+.card.matched .card-back {
+  box-shadow: 0 0 0.5rem rgba(0, 128, 0, 0.6);
+}
+
+/* reduced-motion: no animations */
+@media (prefers-reduced-motion: reduce) {
+  .card .card-inner {
+    transition: none;
   }
-  to {
-    transform: rotate(360deg);
+  .card:not(.revealed):not(.matched):hover .card-inner,
+  .card:not(.revealed):not(.matched):focus-visible .card-inner {
+    transform: none;
   }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  .card.fading {
+    transition: none;
   }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
 }

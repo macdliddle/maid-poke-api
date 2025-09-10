@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import GameBoard from './components/GameBoard';
+import useGame from './hooks/useGame';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const { deck, moves, strikes, gameResult, reveal, reset } = useGame();
+
+  // strikes
+  const strikeIcons = '✖'.repeat(strikes);
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div className="game-container">
+      {/* Header - strikes, moves, restart */}
+      <header className="game-header">
+        <div className="strikes" aria-live="polite">
+          Strikes: <span>{strikeIcons}</span>
+        </div>
+        <div className="moves" aria-live="polite">
+          Moves: {moves}
+        </div>
+        <button type="button" onClick={reset} className="restart-btn">
+          Restart
         </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      </header>
 
-export default App
+      <GameBoard deck={deck} onReveal={reveal} />
+
+      {/* overlay on win/lose */}
+      {gameResult && (
+        <div className="overlay" role="alert">
+          <div className="overlay-content" tabIndex={-1}>
+            {gameResult === 'victory' ? 'Victory!' : 'Game Over'}
+            <div>
+              <button
+                type="button"
+                onClick={reset}
+                autoFocus
+                className="restart-btn"
+              >
+                Restart
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
