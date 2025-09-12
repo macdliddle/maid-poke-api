@@ -7,9 +7,14 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Vite build output
 dist
 dist-ssr
+
+# Local environment files
 *.local
 
 # Editor directories and files
@@ -22,3 +27,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Electron build output
+*-win32-x64/
+MetricAidGame_v2-win32-x64/
+
+# Release artifacts
+*.zip
+*.exe
